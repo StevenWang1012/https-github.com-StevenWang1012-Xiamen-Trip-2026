@@ -12,7 +12,9 @@ import {
   Navigation,
   Train,
   Ship,
-  Info
+  Info,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { 
@@ -26,6 +28,7 @@ export default function App() {
   const [selectedDate, setSelectedDate] = useState(itineraryData[0].dateId);
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [showChecklist, setShowChecklist] = useState(false);
+  const [isFlightExpanded, setIsFlightExpanded] = useState(false);
 
   // Compute all tasks flattened
   const allTaskItems = preparationTasks.flatMap(c => c.items);
@@ -56,56 +59,31 @@ export default function App() {
   const selectedItinerary = itineraryData.find(d => d.dateId === selectedDate) || itineraryData[0];
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-slate-800 font-sans pb-24 mx-auto max-w-md shadow-2xl relative overflow-hidden">
+    <div className="min-h-screen bg-[#FDFBF7] text-slate-800 font-sans pb-24 mx-auto max-w-md shadow-2xl relative">
       
       {/* Sticky Header with Cover Image and Title */}
-      <header className="sticky top-0 z-30 bg-white shadow-sm shrink-0">
-        <div className="relative h-32 w-full overflow-hidden">
-          <div className="absolute inset-0 bg-slate-900/40 z-10" />
-          <img 
-            src="https://picsum.photos/seed/xiamen/800/400" 
-            alt="Xiamen city" 
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 z-20 flex flex-col justify-end p-5 pb-4">
-            <h1 className="text-3xl font-extrabold text-white leading-tight tracking-tight drop-shadow-md flex items-baseline gap-2">
-              廈門行 
-              <span className="text-orange-400 text-2xl drop-shadow-sm font-bold">Rundown</span>
-            </h1>
-            <p className="text-white/90 font-medium text-xs flex items-center mt-1 drop-shadow-sm">
-              <Calendar className="w-3.5 h-3.5 mr-1.5" />
-              4/28 (一) - 5/2 (五)
-            </p>
-          </div>
-        </div>
-
-        {/* Navigation Tabs (Now part of the sticky header block) */}
-        <div className="bg-[#FDFBF7]/95 backdrop-blur-md pt-3 pb-2 px-2 border-b border-slate-100">
-          <div className="flex overflow-x-auto hide-scrollbar gap-2 px-3 pb-2 snap-x">
-            {itineraryData.map(day => {
-              const isSelected = selectedDate === day.dateId;
-              return (
-                <button
-                  key={day.dateId}
-                  onClick={() => setSelectedDate(day.dateId)}
-                  className={cn(
-                    "flex-shrink-0 snap-center rounded-full px-5 py-2.5 text-sm font-bold transition-all",
-                    isSelected 
-                      ? "bg-slate-900 text-white shadow-md shadow-slate-900/20 scale-105" 
-                      : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
-                  )}
-                >
-                  {day.dateStr} <span className={cn("ml-1 font-normal opacity-75", isSelected && "opacity-100")}>{day.dayOfWeek}</span>
-                </button>
-              )
-            })}
-          </div>
+      <header className="sticky top-0 z-30 bg-white shadow-sm shrink-0 h-32 w-full overflow-hidden flex flex-col justify-end">
+        <div className="absolute inset-0 bg-slate-900/40 z-10" />
+        <img 
+          src="https://picsum.photos/seed/xiamen/800/400" 
+          alt="Xiamen city" 
+          className="absolute inset-0 w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+        <div className="relative z-20 p-5 pb-4">
+          <h1 className="text-3xl font-extrabold text-white leading-tight tracking-tight drop-shadow-md flex items-baseline gap-2">
+            廈門行 
+            <span className="text-orange-400 text-2xl drop-shadow-sm font-bold">Rundown</span>
+          </h1>
+          <p className="text-white/90 font-medium text-xs flex items-center mt-1 drop-shadow-sm">
+            <Calendar className="w-3.5 h-3.5 mr-1.5" />
+            4/28 (一) - 5/2 (五)
+          </p>
         </div>
       </header>
 
-      {/* Main Stats / Quick Actions Area (Scrollable) */}
-      <div className="px-5 pt-6 pb-2">
+      {/* Main Stats / Quick Actions Area (Scrollable under header) */}
+      <div className="px-5 pt-6 pb-4 bg-[#FDFBF7]">
         {/* Action Buttons Row */}
         <div className="flex gap-3 mb-6">
           <button 
@@ -123,51 +101,100 @@ export default function App() {
         </div>
 
         {/* Flight Info compact */}
-        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-4">
-          <div className="flex items-start gap-3">
-            <PlaneTakeoff className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-            <div className="text-sm w-full">
-              <div className="font-bold text-slate-700 mb-1.5 flex items-center justify-between">
-                <span>我的航班 <span className="text-slate-400 font-medium text-xs ml-1">(AE765)</span></span>
-              </div>
-              <div className="text-slate-600 text-xs space-y-1.5 w-full">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">去</span>
-                  <span className="font-mono text-slate-800">4/28 11:05</span>
-                  <span className="text-slate-500">台中 (RMQ)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">回</span>
-                  <span className="font-mono text-slate-800">5/02 09:10</span>
-                  <span className="text-slate-500">金門 (KNH)</span>
-                </div>
-              </div>
+        <div className="bg-slate-50 border border-slate-100 rounded-2xl overflow-hidden">
+          <button 
+            onClick={() => setIsFlightExpanded(!isFlightExpanded)}
+            className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-slate-100 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <PlaneTakeoff className="w-5 h-5 text-slate-500" />
+              <span className="font-bold text-slate-700 text-sm">航班資訊及時刻</span>
             </div>
-          </div>
-          <div className="h-px bg-slate-200 w-full" />
-          <div className="flex items-start gap-3">
-            <PlaneTakeoff className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
-            <div className="text-sm w-full">
-              <div className="font-bold text-slate-700 mb-1.5">父母航班</div>
-              <div className="text-slate-600 text-xs space-y-1.5 w-full">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">去</span>
-                  <span className="font-mono text-slate-800">4/28 13:00</span>
-                  <span className="text-slate-500">松山 (TSA)</span>
+            {isFlightExpanded ? (
+              <ChevronUp className="w-4 h-4 text-slate-400" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-slate-400" />
+            )}
+          </button>
+          
+          <AnimatePresence>
+            {isFlightExpanded && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="px-4 pb-4 space-y-4 pt-1"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-5 h-5 shrink-0" />
+                  <div className="text-sm w-full">
+                    <div className="font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                      <span>我的航班 <span className="text-slate-400 font-medium text-xs ml-1">(AE765)</span></span>
+                    </div>
+                    <div className="text-slate-600 text-xs space-y-1.5 w-full">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">去</span>
+                        <span className="font-mono text-slate-800">4/28 11:05</span>
+                        <span className="text-slate-500">台中 (RMQ)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">回</span>
+                        <span className="font-mono text-slate-800">5/02 09:10</span>
+                        <span className="text-slate-500">金門 (KNH)</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">回</span>
-                  <span className="font-mono text-slate-800">5/02 12:15</span>
-                  <span className="text-slate-500">金門 (KNH)</span>
+                <div className="h-px bg-slate-200 w-full ml-8" />
+                <div className="flex items-start gap-3">
+                  <div className="w-5 h-5 shrink-0" />
+                  <div className="text-sm w-full">
+                    <div className="font-bold text-slate-700 mb-1.5">父母航班</div>
+                    <div className="text-slate-600 text-xs space-y-1.5 w-full">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">去</span>
+                        <span className="font-mono text-slate-800">4/28 13:00</span>
+                        <span className="text-slate-500">松山 (TSA)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 font-bold text-slate-400 bg-slate-200 text-[10px] px-1 py-0.5 rounded text-center">回</span>
+                        <span className="font-mono text-slate-800">5/02 12:15</span>
+                        <span className="text-slate-500">金門 (KNH)</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Navigation Tabs (Sticky beneath Cover) */}
+      <div className="sticky top-32 z-20 bg-[#FDFBF7]/95 backdrop-blur-md pt-3 pb-2 px-2 border-b border-t border-slate-200/50 shadow-sm">
+        <div className="flex overflow-x-auto hide-scrollbar gap-2 px-3 pb-2 snap-x">
+          {itineraryData.map(day => {
+            const isSelected = selectedDate === day.dateId;
+            return (
+              <button
+                key={day.dateId}
+                onClick={() => setSelectedDate(day.dateId)}
+                className={cn(
+                  "flex-shrink-0 snap-center rounded-full px-5 py-2.5 text-sm font-bold transition-all",
+                  isSelected 
+                    ? "bg-slate-900 text-white shadow-md shadow-slate-900/20 scale-105" 
+                    : "bg-white text-slate-500 border border-slate-200 hover:bg-slate-50"
+                )}
+              >
+                {day.dateStr} <span className={cn("ml-1 font-normal opacity-75", isSelected && "opacity-100")}>{day.dayOfWeek}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Main Content Area */}
-      <main className="px-5 pt-2 relative min-h-[50vh]">
+      <main className="px-5 pt-6 relative min-h-[50vh]">
         <AnimatePresence mode="popLayout">
           <motion.div
             key={selectedDate}
