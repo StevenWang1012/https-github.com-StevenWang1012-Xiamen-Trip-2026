@@ -14,7 +14,9 @@ import {
   Ship,
   Info,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Phone,
+  Globe
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { 
@@ -28,6 +30,7 @@ export default function App() {
   const [selectedDate, setSelectedDate] = useState(itineraryData[0].dateId);
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [showChecklist, setShowChecklist] = useState(false);
+  const [showHotelInfo, setShowHotelInfo] = useState(false);
   const [isFlightExpanded, setIsFlightExpanded] = useState(false);
 
   // Compute all tasks flattened
@@ -80,7 +83,7 @@ export default function App() {
           </h1>
           <p className="text-white/90 font-medium text-xs flex items-center mt-1 drop-shadow-sm">
             <Calendar className="w-3.5 h-3.5 mr-1.5" />
-            4/28 (一) - 5/2 (五)
+            4/28 (三) - 5/2 (日)
           </p>
         </div>
       </header>
@@ -97,10 +100,13 @@ export default function App() {
             <div className="text-xs font-semibold">行前準備與預約</div>
           </button>
           
-          <div className="flex-1 bg-blue-50 py-3 rounded-2xl flex flex-col items-center justify-center gap-1">
+          <button 
+            onClick={() => setShowHotelInfo(true)}
+            className="flex-1 bg-blue-50 hover:bg-blue-100 transition-colors py-3 rounded-2xl flex flex-col items-center justify-center gap-1 active:scale-95"
+          >
             <Hotel className="w-5 h-5 text-blue-600 mb-1" />
             <div className="text-xs font-semibold text-blue-800">翔鷺國際大酒店</div>
-          </div>
+          </button>
         </div>
 
         {/* Flight Info compact */}
@@ -285,8 +291,8 @@ export default function App() {
                       </div>
                     )}
 
-                    {/* Render split paths inline if it's the 14:00 split item */}
-                    {item.type === 'split' && (
+                    {/* Render me path inline if it's the 14:00 split item */}
+                    {item.id === '01-2' && (
                       <div className="mt-2 space-y-4 pt-4 border-t border-slate-100">
                         <div>
                           <div className="flex items-center gap-2 mb-3">
@@ -301,7 +307,12 @@ export default function App() {
                             ))}
                           </div>
                         </div>
+                      </div>
+                    )}
 
+                    {/* Render family path inline if it's the Quanzhou item */}
+                    {item.id === '01-3' && (
+                      <div className="mt-2 space-y-4 pt-4 border-t border-slate-100">
                         <div>
                           <div className="flex items-center gap-2 mb-3">
                             <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded">【家人路徑：泉州】</span>
@@ -408,6 +419,83 @@ export default function App() {
                 className="w-full mt-4 shrink-0 bg-slate-900 text-white font-bold py-4 rounded-2xl shadow-lg"
               >
                 收起清單
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Hotel Info Overlay */}
+      <AnimatePresence>
+        {showHotelInfo && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowHotelInfo(false)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40"
+            />
+            <motion.div 
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              drag="y"
+              dragConstraints={{ top: 0 }}
+              dragElastic={{ top: 0, bottom: 0.4 }}
+              onDragEnd={(event, info) => {
+                if (info.offset.y > 100 || info.velocity.y > 500) {
+                  setShowHotelInfo(false);
+                }
+              }}
+              className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white rounded-t-[32px] shadow-2xl z-50 p-6 pb-12 flex flex-col"
+            >
+              <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6 shrink-0" />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                  <Hotel className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">翔鷺國際大酒店</h2>
+                  <p className="text-sm text-slate-500 font-medium">Xianglu Grand Hotel</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <a href="https://maps.apple.com/?q=中國福建省廈門市湖里區長浩路+18+號" target="_blank" rel="noreferrer" className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors">
+                  <MapPin className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 mb-1">地址</div>
+                    <div className="text-sm font-medium text-slate-800 leading-relaxed">
+                      中國福建省廈門市湖里區長浩路 18 號<br/>
+                      <span className="text-slate-500 text-xs">（郵遞區號：361006）</span>
+                    </div>
+                  </div>
+                </a>
+
+                <a href="tel:+865922638888" className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors">
+                  <Phone className="w-5 h-5 text-slate-400 shrink-0" />
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 mb-0.5">電話</div>
+                    <div className="text-sm font-bold text-blue-600">+86 592 263 8888</div>
+                  </div>
+                </a>
+
+                <a href="http://www.xianglugrand.com/" target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors">
+                  <Globe className="w-5 h-5 text-slate-400 shrink-0" />
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 mb-0.5">官方網站</div>
+                    <div className="text-sm font-bold text-blue-600">www.xianglugrand.com</div>
+                  </div>
+                </a>
+              </div>
+              
+              <button 
+                onClick={() => setShowHotelInfo(false)}
+                className="w-full mt-6 shrink-0 bg-slate-900 text-white font-bold py-4 rounded-2xl shadow-lg active:scale-[0.98] transition-transform"
+              >
+                關閉
               </button>
             </motion.div>
           </>

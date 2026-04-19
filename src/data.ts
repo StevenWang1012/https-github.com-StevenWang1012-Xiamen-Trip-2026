@@ -22,7 +22,7 @@ export const itineraryData: DailyItinerary[] = [
   {
     dateId: '2026-04-28',
     dateStr: '4/28',
-    dayOfWeek: '一',
+    dayOfWeek: '三',
     items: [
       {
         id: '28-1',
@@ -46,7 +46,7 @@ export const itineraryData: DailyItinerary[] = [
   {
     dateId: '2026-04-29',
     dateStr: '4/29',
-    dayOfWeek: '二',
+    dayOfWeek: '四',
     items: [
       {
         id: '29-1',
@@ -79,7 +79,7 @@ export const itineraryData: DailyItinerary[] = [
   {
     dateId: '2026-04-30',
     dateStr: '4/30',
-    dayOfWeek: '三',
+    dayOfWeek: '五',
     items: [
       {
         id: '30-1',
@@ -111,7 +111,7 @@ export const itineraryData: DailyItinerary[] = [
   {
     dateId: '2026-05-01',
     dateStr: '5/01',
-    dayOfWeek: '四',
+    dayOfWeek: '六',
     warnings: [
       '5/1 警告：連假期間漳州站、泉州站人潮極多，請姪女務必提前在 12306 App 買好所有動車票，避免現場無票。'
     ],
@@ -150,15 +150,16 @@ export const itineraryData: DailyItinerary[] = [
   {
     dateId: '2026-05-02',
     dateStr: '5/02',
-    dayOfWeek: '五',
+    dayOfWeek: '日',
     items: [
       {
         id: '02-1',
         timeLabel: '上午',
-        title: '行程收尾',
-        description: '13:30 泉州返廈門 > 15:00 退房返程',
-        food: '準備賦歸',
+        title: '退房返程',
+        description: '翔鷺國際大酒店退房 > 前往五通碼頭搭船 > 金門機場搭機',
+        food: '飯店早餐 / 準備賦歸',
         type: 'activity',
+        advice: '請依照兩批不同的航班時間（09:10 及 12:15），提早預約計程車前往五通碼頭，並預留小三通的通關與乘船時間。',
       },
     ],
   },
